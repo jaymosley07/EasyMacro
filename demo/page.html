@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Easy Macros</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="funcs.js"></script>
+</head>
+<center>
+<body>
+        <br />
+        <br />
+        <br />
+        <div id="uploadDv">
+        <br />
+        <p>Upload CSV</p>
+        <br />
+        <input type="file" id="user_csv" />
+        <input type="button" id="upload" value="Upload" onclick="upload_file()" />
+        </div>
+        <br />
+        <br />
+        <br />
+        <p>Foods</p>
+        <div id="dvCSV">
+            <table id="tbCSV" contenteditable="true">
+                <tr contenteditable="false">
+                    <th>Name</th>
+                    <th>Calories</th>
+                    <th>Fat<br />(g)</th>
+                    <th>Chol.<br />(mg)</th>
+                    <th>Sodium<br />(mg)</th>
+                    <th>Carbs<br />(g)</th>
+                    <th>Fiber<br />(g)</th>
+                    <th>Sugars<br />(g)</th>
+                    <th>Protein<br />(g)</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th></th>
+                </tr>
+                <tr contenteditable="false">
+                    <td class="inp"><input type="text" id="t0" /></td>
+                    <td class="inp"><input type="number" id="t1" /></td>
+                    <td class="inp"><input type="number" id="t2" /></td>
+                    <td class="inp"><input type="number" id="t3" /></td>
+                    <td class="inp"><input type="number" id="t4" /></td>
+                    <td class="inp"><input type="number" id="t5" /></td>
+                    <td class="inp"><input type="number" id="t6" /></td>
+                    <td class="inp"><input type="number" id="t7" /></td>
+                    <td class="inp"><input type="number" id="t8" /></td>
+                    <td class="inp"><input type="number" id="t9" /></td>
+                    <td class="inp"><input type="number" id="t10" /></td>
+                    <td onclick="manual_add_food()"><a>Add</a></td>
+                </tr>
+            </table>
+        </div>
+        <br /><br /><br /><br />
+        <p>Targets / Weights</p>
+        <div id="targetTable">
+            <table id="tbTarget">
+                <tr>
+                    <th>Calories</th>
+                    <th>Fat</th>
+                    <th>Chol.</th>
+                    <th>Sodium</th>
+                    <th>Carbs</th>
+                    <th>Fiber</th>
+                    <th>Sugars</th>
+                    <th>Protein</th>
+                </tr>
+                <!-- <tr>
+                    <td class="inp"><input type="number" id="tr0" value="2700" /></td>
+                    <td class="inp"><input type="number" id="tr1" value="100" /></td>
+                    <td class="inp"><input type="number" id="tr2" value="200" /></td>
+                    <td class="inp"><input type="number" id="tr3" value="1900" /></td>
+                    <td class="inp"><input type="number" id="tr4" value="290" /></td>
+                    <td class="inp"><input type="number" id="tr5" value="30" /></td>
+                    <td class="inp"><input type="number" id="tr6" value="80" /></td>
+                    <td class="inp"><input type="number" id="tr7" value="160" /></td>
+                </tr> -->
+                <tr>
+                    <td class="inp"><input type="number" id="tr0" value="2000" /></td>
+                    <td class="inp"><input type="number" id="tr1" value="68" /></td>
+                    <td class="inp"><input type="number" id="tr2" value="200" /></td>
+                    <td class="inp"><input type="number" id="tr3" value="1900" /></td>
+                    <td class="inp"><input type="number" id="tr4" value="227" /></td>
+                    <td class="inp"><input type="number" id="tr5" value="30" /></td>
+                    <td class="inp"><input type="number" id="tr6" value="80" /></td>
+                    <td class="inp"><input type="number" id="tr7" value="120" /></td>
+                </tr>
+                <tr>
+                    <td class="inp"><input type="number" id="w0" value="0.7" /></td>
+                    <td class="inp"><input type="number" id="w1" value="1.0" /></td>
+                    <td class="inp"><input type="number" id="w2" value="0.1" /></td>
+                    <td class="inp"><input type="number" id="w3" value="0.1" /></td>
+                    <td class="inp"><input type="number" id="w4" value="1.0" /></td>
+                    <td class="inp"><input type="number" id="w5" value="1.0" /></td>
+                    <td class="inp"><input type="number" id="w6" value="1.0" /></td>
+                    <td class="inp"><input type="number" id="w7" value="2.0" /></td>
+                </tr>
+                <tr>
+                    <td class="inp">
+                        <select id="s0">
+                            <option value="over">Over</option>
+                            <option value="close" selected>Close</option>
+                            <option value="under">Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s1">
+                            <option value="over">Over</option>
+                            <option value="close" selected>Close</option>
+                            <option value="under">Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s2">
+                            <option value="over">Over</option>
+                            <option value="close">Close</option>
+                            <option value="under" selected>Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s3">
+                            <option value="over">Over</option>
+                            <option value="close">Close</option>
+                            <option value="under" selected>Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s4">
+                            <option value="over">Over</option>
+                            <option value="close" selected>Close</option>
+                            <option value="under">Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s5">
+                            <option value="over">Over</option>
+                            <option value="close" selected>Close</option>
+                            <option value="under">Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s6">
+                            <option value="over">Over</option>
+                            <option value="close">Close</option>
+                            <option value="under" selected>Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                    <td class="inp">
+                        <select id="s7">
+                            <option value="over" selected>Over</option>
+                            <option value="close">Close</option>
+                            <option value="under">Under</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br /><br /><br /><br />
+        <input id="solvebtn" type="button" value="Solve" onclick="solve_foods()" />
+        <br /><br /><br /><br />
+        <div id="sol_list"></div>
+</body>
+</center>
+</html>
+
+<!-- Once solving works, make progress bar and time remaining counter -->
+<!-- program will fail if number of possible combos is less than n_combos -->
+<!-- error handling for csv import (including checking foods) -->
+<!-- error handling for empty table -->
+<!-- add progress bar, probably needs setInterval or something time based so that html can be updated before the script finishes running  -->
+<!-- consider a faster method for scoring & sorting (write it yourself)  -->
+<!-- use insort method instead of .sort() any time a new combo is pushed in -->
+<!-- add error handling if the device that loaded the website wont be able to run the js properly
+ -->
+<!-- add error handling for the file upload function if the csv contains errors -->
+<!-- look at various js operations and see if they can be replaced by more efficient ones (focus on arrays) -->
+<!-- try to simplify css and use good practices -->
+<!-- make manual add food add from the top of the table -->
+<!-- rethink the targets/weights section for clarity -->
+<!-- consider renaming all variables -->

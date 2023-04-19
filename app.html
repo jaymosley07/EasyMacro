@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Easy Macros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --main-bg-color: #F8F8F8;
+            --table-header-bg: #C59FC9;
+            --input-bg-color: #EDEDED;
+            --input-number-text-color: #333;
+            --link-color: #3498db;
+            --button-bg-color: #5c6bc0;
+            --button-text-color: #fff;
+            --content-container-width: 1200px;
+        }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--main-bg-color);
+            line-height: 1.6;
+            color: #333;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            text-decoration: underline rgba(0, 0, 0, 0.2);
+        }
+
+        p {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 1.2rem;
+        }
+
+        a {
+            text-decoration: underline;
+            color: var(--link-color);
+            cursor: pointer;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            margin: 0 auto;
+            margin-top:2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+        table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            width: 7%;
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+        }
+
+        td {
+            background-color: white;
+        }
+
+        tr {
+            height: 40px;
+        }
+        input[type=number],
+        input[type=text],
+        select {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ccc;
+            background-color: var(--input-bg-color);
+            color: var(--input-number-text-color);
+            font-size: 1rem;
+            padding: 0 0.5rem;
+        }
+        button {
+            cursor: pointer;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3f51b5;
+        }
+        .sol-card {
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 2rem;
+            margin-bottom: 1rem;
+            margin-top:1rem;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .food-list {
+            display: flex;
+            flex-wrap: wrap;
+            list-style-type: none;
+            margin-bottom: 1rem;
+        }
+
+        .food-item {
+            flex-basis: 50%;
+            padding: 0.25rem 0;
+            padding-left:2rem;
+            list-style-type: none;
+        }
+
+        .nutr-table {
+            margin-top:1rem;
+            width: 100%;
+        }
+
+        .flist {
+            margin-bottom: 1em;
+        }
+
+        .upload-section,
+        .solve-section {
+            width: 100%;
+            text-align: left;
+        }
+
+        #dvCSV {
+            margin-bottom: 2em;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --content-container-width: 100%;
+            }
+        }
+
+    </style>
+    <script>
+        function createRemoveButton() {
+            const removeButton = document.createElement('a');
+            removeButton.textContent = 'Remove';
+            removeButton.style.cursor = 'pointer';
+            removeButton.addEventListener('click', () => {
+                removeButton.parentNode.parentNode.remove();
+            });
+
+            return removeButton;
+        }
+
+
+        function uploadFileBridge() {
+            var userCSV = document.getElementById('userCSV');
+            userCSV.click();
+        }
+
+        function uploadFile() {
+            const userFile = document.getElementById('userCSV');
+            if (!userFile.value.toLowerCase().endsWith('.csv')) {
+                alert('Please upload a .csv file');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const table = document.getElementById('tbCSV');
+                    const rows = event.target.result.split('\n');
+                    if (rows.length < 2) throw new Error('Not enough rows in CSV.');
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = rows[i].split(',');
+                        if (cells.length != 11) continue;
+                        const row = table.insertRow(-1);
+                        for (let j = 0; j < cells.length; j++) {
+                            const cell = row.insertCell(-1);
+                            cell.textContent = cells[j];
+                        }
+                        const cell = row.insertCell(-1);
+                        cell.setAttribute('contenteditable', false);
+                        cell.appendChild(createRemoveButton());
+                    }
+                    const dvCSV = document.getElementById('dvCSV');
+                    dvCSV.innerHTML = '';
+                    dvCSV.appendChild(table);
+                }
+                catch (error) {
+                    alert('There was an error reading the file.');
+                }
+            }
+            reader.readAsText(userFile.files[0]);
+        }
+
+
+        function manualAddFood() {
+            const values = [];
+            let input;
+
+            for (let i = 0; i < 11; i++) {
+                input = document.getElementById(`t${i}`).value;
+
+                if (input === '') {
+                    alert('Please fill in all values for the food you want to add.');
+                    return;
+                }
+
+                if (i > 0 && input < 0) {
+                    alert('There cannot be negative values of nutrition.');
+                    return;
+                }
+
+                values.push(input);
+            }
+
+            const table = document.getElementById('tbCSV');
+            const row = table.insertRow(-1);
+
+            for (let i = 0; i < 11; i++) {
+                const cell = row.insertCell(-1);
+                cell.textContent = values[i];
+                document.getElementById(`t${i}`).value = '';
+            }
+
+            const cell = row.insertCell(-1);
+            cell.setAttribute('contenteditable', false);
+            cell.appendChild(createRemoveButton());
+        }
+
+
+        function ranges(bounds) {
+            return bounds.map(([start, end]) => Array.from({
+                length: end - start + 1
+            }, (_, i) => start + i));
+        }
+
+
+        function* rangedCombinations(head, ...tail) {
+            if (tail.length === 0) {
+                for (const h of head) {
+                    yield [h];
+                }
+            } else {
+                const remainder = rangedCombinations(...tail);
+                for (const r of remainder) {
+                    for (const h of head) {
+                        yield [h, ...r];
+                    }
+                }
+            }
+        }
+
+
+        function getTable() {
+            const fullData = [];
+            const table = document.getElementById('tbCSV');
+
+            for (let i = 2; i < table.rows.length; i++) {
+                const ithRow = table.rows[i].cells;
+                const ithArr = [ithRow[0].innerHTML];
+
+                for (let j = 1; j < ithRow.length - 1; j++) {
+                    const cell = parseFloat(ithRow[j].innerHTML);
+                    ithArr.push(cell);
+                }
+
+                fullData.push(ithArr);
+            }
+
+            return fullData;
+        }
+
+
+        function getValuesById(prefix, count) {
+            const values = [];
+            for (let i = 0; i < count; i++) {
+                const element = document.getElementById(`${prefix}${i}`);
+                values.push(prefix === 's' ? element.value : parseFloat(element.value));
+            }
+            return values;
+        }
+
+
+        function calcTotal(nutrArr, combo) {
+            const t = new Array(8).fill(0);
+
+            for (let foodInd = 0; foodInd < nutrArr.length; foodInd++) {
+                for (let nutrInd = 0; nutrInd < 8; nutrInd++) {
+                    t[nutrInd] += combo[foodInd] * nutrArr[foodInd][nutrInd];
+                }
+            }
+
+            return t;
+        }
+
+
+        function weightedDistance(totals, target, weights, pref) {
+            let dist = 0;
+
+            for (let i = 0; i < 8; i++) {
+                const difference = target[i] - totals[i];
+
+                if (pref[i] === 'close') {
+                    dist += Math.abs(difference) * weights[i];
+                } else if (pref[i] === 'over' && difference > 0) {
+                    dist += difference * weights[i];
+                } else if (pref[i] === 'under' && difference < 0) {
+                    dist -= difference * weights[i];
+                }
+            }
+
+            return dist;
+        }
+
+
+
+        function bestCombos(foodList, target, pref, nCombos = 20, weights = Array(8).fill(1.0)) {
+            const scoredCombos = [];
+            const nutrientsArray = [];
+            const bounds = [];
+            const nFoods = foodList.length;
+
+            for (let i = 0; i < nFoods; i++) {
+                nutrientsArray.push(foodList[i].slice(1));
+                bounds.push([foodList[i][9], foodList[i][10]]);
+            }
+
+            const rangeList = ranges(bounds);
+            const combos = rangedCombinations(...rangeList);
+            let combo;
+            let distance;
+
+            for (let i = 0; i < nCombos; i++) {
+                combo = combos.next().value;
+                const totals = calcTotal(nutrientsArray, combo);
+                distance = weightedDistance(totals, target, weights, pref);
+                scoredCombos.push([distance, combo, totals]);
+            }
+
+            scoredCombos.sort();
+
+            let highInclDist = scoredCombos[nCombos - 1][0];
+
+            for (const c of combos) {
+                const totals = calcTotal(nutrientsArray, c);
+                distance = weightedDistance(totals, target, weights, pref);
+                if (distance < highInclDist) {
+                    scoredCombos.pop();
+                    highInclDist = scoredCombos[nCombos - 2][0];
+
+                    if (distance > scoredCombos[nCombos - 2][0]) {
+                        scoredCombos.push([distance, c, totals]);
+                        continue;
+                    }
+
+                    for (let j = 0; j < nCombos - 1; j++) {
+                        if (distance <= scoredCombos[j][0]) {
+                            scoredCombos.splice(j, 0, [distance, c, totals]);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return scoredCombos;
+        }
+
+
+        function addResult(foodList, combo) {
+            const ul = document.createElement('ul');
+            ul.classList.add('food-list')
+
+            for (let i = 0; i < combo.length; i++) {
+                if (combo[i] > 0) {
+                    const itemStr = `${combo[i]} x ${foodList[i][0]}`;
+                    const li = document.createElement('li');
+                    li.classList.add('food-item')
+                    li.textContent = itemStr;
+                    ul.append(li);
+                }
+            }
+
+            return ul;
+        }
+
+
+        function solveFoods() {
+            document.getElementById('solList').innerHTML = '';
+            const foodList = getTable();
+            const target = getValuesById('tr', 8);
+            const weights = getValuesById('w', 8);
+            const pref = getValuesById('s', 8);
+            const printableCombos = bestCombos(foodList, target, pref, 20, weights);
+
+            for (let i = 0; i < printableCombos.length; i++) {
+                const div = document.createElement('div');
+                div.classList.add('sol-card');
+
+                const p = document.createElement('p');
+                const p2 = document.createElement('p');
+
+                const text = document.createTextNode(`Option #${i + 1}`);
+                const text2 = document.createTextNode(`Weighted Distance: ${Math.round(printableCombos[i][0])}`);
+
+                const ul = addResult(foodList, printableCombos[i][1]);
+                ul.className = 'flist';
+
+                p.appendChild(text);
+                p2.appendChild(text2);
+
+                div.appendChild(p);
+                div.appendChild(ul);
+                div.appendChild(p2);
+
+                const totalTable = document.createElement('table');
+                totalTable.classList.add('nutr-table');
+
+                const r1 = totalTable.insertRow(-1);
+                const r2 = totalTable.insertRow(-1);
+
+                const attr = ['Calories', 'Fat', 'Chol.', 'Sodium', 'Carbs', 'Fiber', 'Sugars', 'Protein'];
+
+                for (let j = 0; j < 8; j++) {
+                    const cell1 = r1.insertCell(-1);
+                    cell1.innerHTML = attr[j];
+
+                    const cell2 = r2.insertCell(-1);
+                    cell2.innerHTML = printableCombos[i][2][j].toString();
+                }
+
+                div.appendChild(totalTable);
+                document.getElementById('solList').appendChild(div);
+            }
+        }
+
+
+        function downloadCSV() {
+            const table = document.getElementById('tbCSV');
+            let csvContent = '';
+
+            for (let i = 0; i < table.rows.length; i++) {
+                if (i === 1) continue;
+                const row = table.rows[i];
+                let rowContent = [];
+
+                for (let j = 0; j < row.cells.length; j++) {
+                    if (j === row.cells.length - 1) continue;
+
+                    const cell = row.cells[j];
+                    rowContent.push(cell.textContent);
+                }
+
+                csvContent += rowContent.join(',') + '\n';
+            }
+
+            const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            const link = document.createElement('a');
+
+            link.setAttribute('href', csvUrl);
+            link.setAttribute('download', 'food_nutrition.csv');
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</head>
+<body>
+    <main>
+        <section class="upload-section">
+            <h2>Step 1 - Upload Saved Foods (optional)</h2>
+            <p>Please upload a .CSV file adhering to the format found <a href="https://docs.google.com/spreadsheets/d/1Ju43RKI3DPxeF7375NCuNVrM4IeSxf1Kmk24LRBVRfU/edit?usp=sharing" target="_blank">HERE</a>, or if you prefer, simply enter the food items in the provided space below.</p>
+            <input type="file" id="userCSV" style="display:none;" onchange="uploadFile()">
+            <button id="upload" onclick="uploadFileBridge()">Select File</button>
+        </section>
+
+        <section class="foods-section">
+            <h2>Step 2 - Manually Enter or Edit Foods</h2>
+            <p>You have the option to manually input and delete food items along with their nutritional information. Additionally, you may choose to download a CSV file containing the updated food items and corresponding nutritional data.</p>
+            <div id="dvCSV">
+                <table id="tbCSV" contenteditable="true">
+                    <tr contenteditable="false">
+                        <th>Name</th>
+                        <th>Calories</th>
+                        <th>Fat<br />(g)</th>
+                        <th>Cholesterol<br />(mg)</th>
+                        <th>Sodium<br />(mg)</th>
+                        <th>Carbs<br />(g)</th>
+                        <th>Fiber<br />(g)</th>
+                        <th>Sugars<br />(g)</th>
+                        <th>Protein<br />(g)</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                        <th></th>
+                    </tr>
+                    <tr contenteditable="false">
+                        <td class="inp"><input type="text" id="t0" /></td>
+                        <td class="inp"><input type="number" id="t1" /></td>
+                        <td class="inp"><input type="number" id="t2" /></td>
+                        <td class="inp"><input type="number" id="t3" /></td>
+                        <td class="inp"><input type="number" id="t4" /></td>
+                        <td class="inp"><input type="number" id="t5" /></td>
+                        <td class="inp"><input type="number" id="t6" /></td>
+                        <td class="inp"><input type="number" id="t7" /></td>
+                        <td class="inp"><input type="number" id="t8" /></td>
+                        <td class="inp"><input type="number" id="t9" /></td>
+                        <td class="inp"><input type="number" id="t10" /></td>
+                        <td onclick="manualAddFood()"><a>Add</a></td>
+                    </tr>
+                </table>
+            </div>
+            <button id="downloadCSV" onclick="downloadCSV()">Download CSV</button>
+        </section>
+
+        <section class="targets-section">
+            <h2>Step 3 - Set Targets and Weights</h2>
+            <p>First, enter your nutritional goals. Then, assign priority multipliers to each element (higher = more important). Lastly, decide whether to meet, exceed, stay below, or disregard each target. Please note that the values displayed here serve as an example only and should not be considered as nutritional advice.</p>
+            <div id="targetTable">
+                <table id="tbTarget">
+                    <tr>
+                        <th>Calories</th>
+                        <th>Fat</th>
+                        <th>Cholesterol</th>
+                        <th>Sodium</th>
+                        <th>Carbs</th>
+                        <th>Fiber</th>
+                        <th>Sugars</th>
+                        <th>Protein</th>
+                    </tr>
+                    <tr>
+                        <td class="inp"><input type="number" id="tr0" value="2000" /></td>
+                        <td class="inp"><input type="number" id="tr1" value="67" /></td>
+                        <td class="inp"><input type="number" id="tr2" value="200" /></td>
+                        <td class="inp"><input type="number" id="tr3" value="1900" /></td>
+                        <td class="inp"><input type="number" id="tr4" value="219" /></td>
+                        <td class="inp"><input type="number" id="tr5" value="30" /></td>
+                        <td class="inp"><input type="number" id="tr6" value="80" /></td>
+                        <td class="inp"><input type="number" id="tr7" value="130" /></td>
+                    </tr>
+                    <tr>
+                        <td class="inp"><input type="number" id="w0" value="0.7" /></td>
+                        <td class="inp"><input type="number" id="w1" value="1.0" /></td>
+                        <td class="inp"><input type="number" id="w2" value="0.1" /></td>
+                        <td class="inp"><input type="number" id="w3" value="0.1" /></td>
+                        <td class="inp"><input type="number" id="w4" value="1.0" /></td>
+                        <td class="inp"><input type="number" id="w5" value="1.0" /></td>
+                        <td class="inp"><input type="number" id="w6" value="1.0" /></td>
+                        <td class="inp"><input type="number" id="w7" value="2.0" /></td>
+                    </tr>
+                    <tr>
+                        <td class="inp">
+                            <select id="s0">
+                                <option value="over">Over</option>
+                                <option value="close" selected>Close</option>
+                                <option value="under">Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s1">
+                                <option value="over">Over</option>
+                                <option value="close" selected>Close</option>
+                                <option value="under">Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s2">
+                                <option value="over">Over</option>
+                                <option value="close">Close</option>
+                                <option value="under" selected>Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s3">
+                                <option value="over">Over</option>
+                                <option value="close">Close</option>
+                                <option value="under" selected>Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s4">
+                                <option value="over">Over</option>
+                                <option value="close" selected>Close</option>
+                                <option value="under">Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s5">
+                                <option value="over">Over</option>
+                                <option value="close" selected>Close</option>
+                                <option value="under">Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s6">
+                                <option value="over">Over</option>
+                                <option value="close">Close</option>
+                                <option value="under" selected>Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                        <td class="inp">
+                            <select id="s7">
+                                <option value="over" selected>Over</option>
+                                <option value="close">Close</option>
+                                <option value="under">Under</option>
+                                <option value="ignore">Ignore</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="solve-section">
+            <h2>Step 4 - Get Meal Plans</h2>
+            <p>If you have inputted numerous food items and/or a wide range of potential servings, the processing time may be extended. Please note that while the page may appear unresponsive, it is still functioning. In cases where only a limited number of food items have been entered, the generated meal plans may not align with your nutritional objectives. The meal plans provided here do not constitute professional nutritional advice. This platform serves as a resource for exploring diverse strategies in meal planning. Nutrition, medical, or dietary decisions should be made in consultation with a registered dietitian or a qualified medical professional. This website does not provide such services. By selecting the "Solve" button, you acknowledge that you have read and comprehended this disclaimer.</p>
+            <button id="solvebtn" onclick="solveFoods()">Solve</button>
+            <div id="solList"></div>
+        </section>
+    </main>
+</body>
+</html>
